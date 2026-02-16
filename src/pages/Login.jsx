@@ -66,7 +66,7 @@ const Login = () => {
         {
             name: 'Trakteer (Support Me)',
             icon: <Coffee size={20} />, // Jangan lupa import Coffee dari lucide-react
-            url: 'https://trakteer.id/username-kamu',
+            url: 'https://teer.id/kqropuqvtsxhzsgfed1y',
             color: 'hover:bg-red-600 hover:text-white',
             textColor: 'text-red-600'
         },
