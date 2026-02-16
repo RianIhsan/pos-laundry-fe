@@ -19,7 +19,9 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             localStorage.clear();
-            window.location.href = '/login';
+            // Gunakan replace ke root atau halaman login
+            // Pastikan vercel.json sudah dipasang agar /login tidak 404
+            window.location.replace('/login');
         }
         return Promise.reject(error);
     }
@@ -28,7 +30,7 @@ api.interceptors.response.use(
 // Fungsi Logout Global
 export const logout = () => {
     localStorage.clear();
-    window.location.href = '/login';
+    window.location.replace('/login');
 };
 
 export default api;
