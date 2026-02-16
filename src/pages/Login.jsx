@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
     Lock, User, Eye, EyeOff, Loader2, X,
-    Linkedin, Instagram, Github, Headset
+    Linkedin, Instagram, Github, Headset, Coffee
 } from 'lucide-react';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -62,6 +62,13 @@ const Login = () => {
             url: 'https://github.com/RianIhsan',
             color: 'hover:bg-slate-800 hover:text-white',
             textColor: 'text-slate-800'
+        },
+        {
+            name: 'Trakteer (Support Me)',
+            icon: <Coffee size={20} />, // Jangan lupa import Coffee dari lucide-react
+            url: 'https://trakteer.id/username-kamu',
+            color: 'hover:bg-red-600 hover:text-white',
+            textColor: 'text-red-600'
         },
     ];
 
