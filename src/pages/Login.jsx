@@ -1,25 +1,72 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import {
+    Lock, User, Eye, EyeOff, Loader2, X,
+    Linkedin, Instagram, Github, Headset
+} from 'lucide-react';
+import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isSupportModalOpen, setIsSupportModalOpen] = useState(false); // State Modal Baru
+
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const navigate = useNavigate();
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (formData) => {
         setIsLoading(true);
-        console.log("Mengirim data ke Backend Go:", data);
+        try {
+            const response = await api.post('/login', {
+                username: formData.username,
+                password: formData.password
+            });
 
-        // Simulasi hit API Login
-        setTimeout(() => {
+            const { access_token, refresh_token, role, username } = response.data.data;
+
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
+            localStorage.setItem('user_role', role);
+            localStorage.setItem('username', username);
+
+            navigate('/');
+            window.location.reload();
+        } catch (error) {
+            console.error("Login Error:", error);
+            alert(error.response?.data?.message || "Gagal login. Cek koneksi backend.");
+        } finally {
             setIsLoading(false);
-            alert("Cek konsol! Ini saatnya kamu kirim token JWT dari Go.");
-        }, 2000);
+        }
     };
 
+    // Data Sosial Media Kamu
+    const socialMedia = [
+        {
+            name: 'LinkedIn',
+            icon: <Linkedin size={20} />,
+            url: 'https://www.linkedin.com/in/rianihsan',
+            color: 'hover:bg-blue-600 hover:text-white',
+            textColor: 'text-blue-600'
+        },
+        {
+            name: 'Instagram',
+            icon: <Instagram size={20} />,
+            url: 'https://www.instagram.com/devwithyon',
+            color: 'hover:bg-pink-600 hover:text-white',
+            textColor: 'text-pink-600'
+        },
+        {
+            name: 'GitHub',
+            icon: <Github size={20} />,
+            url: 'https://github.com/RianIhsan',
+            color: 'hover:bg-slate-800 hover:text-white',
+            textColor: 'text-slate-800'
+        },
+    ];
+
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative">
             <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 overflow-hidden border border-slate-100">
                 <div className="p-8 md:p-12">
                     {/* LOGO & HEADER */}
@@ -27,8 +74,8 @@ const Login = () => {
                         <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
                             <Lock className="text-white" size={32} />
                         </div>
-                        <h2 className="text-3xl font-black text-slate-800 tracking-tighter">LAUNDRY.PRO</h2>
-                        <p className="text-slate-500 font-medium mt-2">Owner & Admin Dashboard Access</p>
+                        <h2 className="text-3xl font-black text-slate-800 tracking-tighter">WASH EXPRESS</h2>
+                        <p className="text-slate-500 font-medium mt-2">I WISH YOU WASH HERE</p>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -88,11 +135,66 @@ const Login = () => {
 
                     <div className="mt-10 text-center">
                         <p className="text-xs text-slate-400 font-medium">
-                            Lupa password? Hubungi <span className="text-blue-500 cursor-pointer hover:underline font-bold">IT Support</span>
+                            Lupa password? Hubungi <span
+                            onClick={() => setIsSupportModalOpen(true)}
+                            className="text-blue-500 cursor-pointer hover:underline font-bold"
+                        >
+                                IT Support
+                            </span>
                         </p>
                     </div>
                 </div>
             </div>
+
+            {/* --- MODAL IT SUPPORT --- */}
+            {isSupportModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-slate-100 animate-in zoom-in duration-300">
+                        {/* Tombol Close */}
+                        <button
+                            onClick={() => setIsSupportModalOpen(false)}
+                            className="absolute right-6 top-6 text-slate-400 hover:text-slate-600 transition p-2 hover:bg-slate-50 rounded-xl"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="p-8 text-center">
+                            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <Headset size={32} />
+                            </div>
+                            <h3 className="text-xl font-black text-slate-800 tracking-tight">Butuh Bantuan?</h3>
+                            <p className="text-sm text-slate-500 font-medium mt-1 mb-8">Hubungi pengembang melalui:</p>
+
+                            <div className="space-y-3">
+                                {socialMedia.map((social) => (
+                                    <a
+                                        key={social.name}
+                                        href={social.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`flex items-center justify-between p-4 rounded-2xl border border-slate-100 font-bold text-sm transition-all duration-300 ${social.textColor} ${social.color} group`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {social.icon}
+                                            <span>{social.name}</span>
+                                        </div>
+                                        <div className="text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Kunjungi
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => setIsSupportModalOpen(false)}
+                                className="mt-8 text-xs font-bold text-slate-400 hover:text-slate-600 tracking-widest uppercase"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
